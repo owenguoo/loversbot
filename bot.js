@@ -44,7 +44,7 @@ function readTimeData() {
     const data = fs.readFileSync(jsonFilePath, 'utf-8');
     return JSON.parse(data);
   } catch (err) {
-    console.log('Error reading JSON file or file does not exist:', err);
+    // // console.log('Error reading JSON file or file does not exist:', err);
     return {}; 
   }
 }
@@ -58,7 +58,7 @@ function readTimeData2() {
     const data = fs.readFileSync(indivPath, 'utf-8');
     return JSON.parse(data);
   } catch (err) {
-    console.log('Error reading JSON file or file does not exist:', err);
+    // // console.log('Error reading JSON file or file does not exist:', err);
     return {};
   }
 }
@@ -70,9 +70,9 @@ function writeTimeData2(data) {
 function loadData() {
   try {
     pairTimeData = readTimeData();
-    console.log('Loaded existing time data');
+    // console.log('Loaded existing time data');
   } catch (err) {
-    console.log('No existing data found, starting fresh');
+    // console.log('No existing data found, starting fresh');
     pairTimeData = {};
   }
 }
@@ -80,9 +80,9 @@ function loadData() {
 function loadData2() {
   try {
     indivTimeData = readTimeData2();
-    console.log('Loaded existing indiv time data');
+    // console.log('Loaded existing indiv time data');
   } catch (err) {
-    console.log('No existing data found, starting fresh');
+    // console.log('No existing data found, starting fresh');
     indivTimeData = {};
   }
 }
@@ -125,17 +125,17 @@ function updateActiveTimes() {
 
   if (dataChanged) {
     writeTimeData(pairTimeData);
-    console.log('Updated time data for active pairs');
+    // console.log('Updated time data for active pairs');
   }
   if (dataChanged2) {
     writeTimeData2(indivTimeData);
-    console.log('Updated time data for active pairs');
+    // console.log('Updated time data for active pairs');
   }
 }
 
 
 client.once('ready', () => {
-  console.log('Bot is online!');
+  // console.log('Bot is online!');
   loadData();
   loadData2();
   
@@ -165,13 +165,13 @@ client.once('ready', () => {
         for (let i = 0; i < usersInChannel.length; i++) {
           const indivKey = getIndivKey(usersInChannel[i]);
           activeIndiv[indivKey] = { startTime: Date.now() };
-          console.log(`Started tracking indiv: ${getUserName(usersInChannel[i])} & ${getUserName(usersInChannel[j])}`);
+          // console.log(`Started tracking indiv: ${getUserName(usersInChannel[i])} & ${getUserName(usersInChannel[j])}`);
         }
         for (let i = 0; i < usersInChannel.length - 1; i++) {
           for (let j = i + 1; j < usersInChannel.length; j++) {
             const pairKey = getPairKey(usersInChannel[i], usersInChannel[j]);
             activePairs[pairKey] = { startTime: Date.now() };
-            console.log(`Started tracking pair: ${getUserName(usersInChannel[i])} & ${getUserName(usersInChannel[j])}`);
+            // console.log(`Started tracking pair: ${getUserName(usersInChannel[i])} & ${getUserName(usersInChannel[j])}`);
           }
         }
       }
@@ -199,7 +199,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
       indivTimeData[indivKey] += elapsed;
       delete activeIndiv[indivKey];
       writeTimeData2(indivTimeData);
-      console.log(`Stopped tracking indiv: ${getUserName(currentUserId)}`);
+      // console.log(`Stopped tracking indiv: ${getUserName(currentUserId)}`);
     }
   
     for (const userId of userIds) {
@@ -216,7 +216,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
           pairTimeData[pairKey] += elapsed;
           delete activePairs[pairKey];
           writeTimeData(pairTimeData);
-          console.log(`Stopped tracking pair: ${getUserName(currentUserId)} & ${getUserName(userId)}`);
+          // console.log(`Stopped tracking pair: ${getUserName(currentUserId)} & ${getUserName(userId)}`);
         }
       }
     }
@@ -226,7 +226,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     const indivKey = getIndivKey(currentUserId);
         if (!activeIndiv[indivKey]) {
           activeIndiv[indivKey] = { startTime: Date.now() };
-          console.log(`Started tracking indiv: ${getUserName(currentUserId)}`);
+          // console.log(`Started tracking indiv: ${getUserName(currentUserId)}`);
         }
 
     for (const userId of userIds) {
@@ -237,7 +237,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         const pairKey = getPairKey(currentUserId, userId);
         if (!activePairs[pairKey]) {
           activePairs[pairKey] = { startTime: Date.now() };
-          console.log(`Started tracking pair: ${getUserName(currentUserId)} & ${getUserName(userId)}`);
+          // console.log(`Started tracking pair: ${getUserName(currentUserId)} & ${getUserName(userId)}`);
         }
       }
     }
@@ -254,7 +254,7 @@ client.on('messageCreate', (message) => {
     ) {
         message.delete();
         message.channel.send(`**NO BRAINROT ALLOWED** <@${message.author.id}>`);
-        console.log(`Deleted Instagram reel from ${message.author.tag}`);
+        // console.log(`Deleted Instagram reel from ${message.author.tag}`);
     return; 
   }
 
