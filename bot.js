@@ -259,6 +259,11 @@ client.on('messageCreate', (message) => {
   }
 
   const content = message.content.toLowerCase();  
+    if (message.content === '!brainrot') {
+      message.channel.send({
+        files: ['https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DHmIMmFAV4BY&psig=AOvVaw0vMMdxDy0Y-H3y8woFal2s&ust=1744663775739000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIjFpJbx1YwDFQAAAAAdAAAAABA0'] 
+      });
+    }
   
   if (content === '!lb') {
     const currentData = { ...pairTimeData };
