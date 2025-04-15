@@ -30,5 +30,5 @@ module.exports = (client) => {
   }
 
   setInterval(() => updateActiveTimes(client), 60_000);
-  console.log('Bot is online.');
+  //console.log('Bot is online.');
 };
