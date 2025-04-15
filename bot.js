@@ -158,9 +158,6 @@ client.once('ready', () => {
     
     for (const channelId in channelUsers) {
       const usersInChannel = channelUsers[channelId];
-
-      
-      
       if (usersInChannel.length >= 2) {
         for (let i = 0; i < usersInChannel.length; i++) {
           const indivKey = getIndivKey(usersInChannel[i]);
@@ -244,6 +241,24 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 });
 
+const path = './events.json';
+
+// Load events from file
+let events = {};
+if (fs.existsSync(path)) {
+  try {
+    events = JSON.parse(fs.readFileSync(path));
+  } catch (e) {
+    console.error("Failed to parse events.json", e);
+  }
+}
+
+// Save events to file
+function saveEvents() {
+  fs.writeFileSync(path, JSON.stringify(events, null, 2));
+}
+
+
 client.on('messageCreate', (message) => {
   if (message.author.bot) return;
 
@@ -259,6 +274,81 @@ client.on('messageCreate', (message) => {
   }
 
   const content = message.content.toLowerCase();  
+  const parts = content.trim().split(" ");
+  const command = parts[0];
+  const name = parts[1];
+  const author = message.author.id;
+
+  if (command === '!makeevent') {
+    const description = parts.slice(2).join(" ");
+    events[name] = { description, responses: {} };
+    message.reply(`Event **${name}** created: ${description}`);
+    saveEvents();
+    return;
+  }
+
+  if (command === '!deleteevent') {
+    if (!events[name]) {
+      return message.reply(`Event "${name}" doesn't exist.`);
+    }
+    delete events[name];
+    message.reply(`Event "${name}" has been deleted.`);
+    saveEvents();
+    return;
+  }
+
+  if (command === '!respond') {
+    const eventName = parts[1];
+    const response = parts[2];
+
+    if (!['yes', 'no'].includes(response)) {
+      return message.reply(`Usage: !respond <eventName> <yes|no>`);
+    }
+    if (!events[eventName]) {
+      return message.reply(`Event "${eventName}" not found.`);
+    }
+    events[eventName].responses[author] = response;
+    saveEvents();
+    return message.reply(`You responded **${response.toUpperCase()}** to **${eventName}**`);
+  }
+
+  if (command === '!details') {
+    const eventName = parts[1];
+    const event = events[eventName];
+    if (!event) return message.reply(`No event called "${eventName}" found.`);
+
+    const yes = [];
+    const no = [];
+    const uncertain = [];
+
+    for (const [name, id] of Object.entries(users)) {
+      const r = event.responses[id];
+      if (r === 'yes') yes.push(name);
+      else if (r === 'no') no.push(name);
+      else uncertain.push(name);
+    }
+
+    const reply = `📅 **${eventName}** – ${event.description}\n\n` +
+      `Yes: ${yes.join(', ') || 'None'}\n` +
+      `No: ${no.join(', ') || 'None'}\n` +
+      `Uncertain: ${uncertain.join(', ') || 'None'}`;
+    return message.reply(reply);
+  }
+
+  if (command === '!events') {
+    const allEventNames = Object.keys(events);
+    if (allEventNames.length === 0) {
+      return message.reply("There are no events currently.");
+    }
+  
+    let reply = "**All Events:**\n";
+    for (const eventName of allEventNames) {
+      reply += `• **${eventName}** – ${events[eventName].description}\n`;
+    }
+  
+    return message.reply(reply);
+  }
+  
 
   if (content === '!lb') {
     const currentData = { ...pairTimeData };
